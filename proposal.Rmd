@@ -1,0 +1,18 @@
+---
+title: "Project Proposal"
+date: "4/6/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#### Team Members:  John Nownes, Sonia Thomas, Yi Hang Khor, and Kobe Pranivong
+#### Project Coordinator: John Nownes
+## Data Set
+https://www.kaggle.com/imdevskp/corona-virus-report (I like this one better personally)
+
+## Overview of Data Set
+
+## Plan for Exploratory Analysis
