@@ -26,3 +26,22 @@ Within Mr. Rajkumar’s coronavirus Kaggle page, there are two different .csv fi
 Looking specifically at our state-level .csv file, we see immediately that the data set is arranged in a “tidy” format, since each observation includes the date of the observation and the state, making these the two keys for that row. As you move along the columns, there are statistics on tests performed cumulatively and on that day, as well as the number of each result (positive, negative, and pending). Additionally, we can see the number of deaths, hospitalizations, recoveries, and ventilators being used.
 
 ## Plan for Exploratory Analysis
+To further analyze this dataset we will look to answer the following questions:
+
+* What is the trend of the overall dataset? Is it increasing or decreasing? Speeding up or slowing down?
+
+* Where are the most reported cases? Least reported cases? (Specifically within each U.S state)
+
+* Of those on ventilators what is the chance of survival? What is the correlation between those on ventilators and death?
+
+* How has Iowa been affected by the virus over time? Has there been a gradual increase, what does it look like?
+
+* What is the increase in the amount of people tested in each state over time?
+
+* Which state is likely to have the most/least confirmed cases in 2 weeks time depending on the current growth rate?
+
+* Will there be more than 1 million confirmed cases in the US after 2 weeks?
+
+* Is the number of the confirmed cases has a direct relationship to the GDP of each state respectively? (We need to include a GDP dataset)
+
+* Which state has done the greatest/worst job in preventing the spreading of coronavirus. 
