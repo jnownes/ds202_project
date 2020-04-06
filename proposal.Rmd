@@ -14,5 +14,6 @@ knitr::opts_chunk$set(echo = TRUE)
 https://www.kaggle.com/imdevskp/corona-virus-report (I like this one better personally)
 
 ## Overview of Data Set
+The dataset we chose for our project looks at the newly discovered coronavirus. Our dataset has the number of tests conducted in each state at a daily level. The contents of the dataset include various amounts of information such as number of tests with positive and negative results, amount of deaths, amount recovered, number of those on ventilators, and more. 
 
 ## Plan for Exploratory Analysis
