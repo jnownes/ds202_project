@@ -51,7 +51,18 @@ dist = Fips %>%
 dat = dat %>%
   inner_join(dist, by = "fips")
 dat$fips = as.factor(dat$fips)
-levels(dat$fips)
+
+
+# https://www.littler.com/publication-press/publication/stay-top-stay-home-list-statewide
+# Hard coding in the dates that the stay at home orders were enacted
+states = c("Alabama", "Alaska", "Arizona", "California", "Colorado", "Connecticut", "Delaware", "District of Columbia", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "Tennessee", "Texas", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin")
+dates = c("April 4, 2020", "March 28, 2020", "March 31, 2020", "March 19, 2020", "March 26, 2020", "March 23, 2020", "March 24, 2020", "April 1, 2020", "April 3, 2020", "April 3, 2020", "March 25, 2020", "March 25, 2020", "March 21, 2020", "March 24, 2020", "March 30, 2020", "March 26, 2020", "March 23, 2020", "April 2, 2020", "March 30, 2020", "March 24, 2020", "March 24, 2020", "March 27, 2020", "April 3, 2020", "April 6, 2020", "March 28, 2020", "April 1, 2020", "March 27, 2020", "March 21, 2020", "March 23, 2020", "March 22, 2020", "March 30, 2020", "March 23, 2020", "March 24, 2020", "March 23, 2020", "April 1, 2020", "March 28, 2020", "April 7, 2020", "March 31, 2020", "April 2, 2020", "March 25, 2020", "March 30, 2020", "March 23, 2020", "March 24, 2020", "March 25, 2020")
+stay_at_home = data.frame("state" = states, "stay_at_home_date" = dates)
+stay_at_home$stay_at_home_date = mdy(stay_at_home$stay_at_home_date)
+
+dat = dat %>%
+  left_join(stay_at_home, by = "state")
+
 
 dat %>%
   ggplot(aes(x=date,y= positive/population)) + geom_point() + facet_wrap(~state)
