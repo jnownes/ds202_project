@@ -74,19 +74,20 @@ g <- list(
   showlakes = TRUE,
   lakecolor = toRGB('white')
 )
-fig = dat %>%
+fig = dat[1:51,] %>%
   plot_geo(locationmode = 'USA-states')
 fig <- fig %>% add_trace(
-  z = ~(positive/population)*1000, text = ~state_abbrev,
+  z = ~(positive/population)*1000, text = ~positive,
   locations = ~state_abbrev,
-  color = ~(positive/population)*1000, colors = 'Purples'
+  color = ~(positive/population)*1000, colors = 'Reds'
 )
-fig <- fig %>% colorbar(title = "Cases per 1000")
+fig <- fig %>% colorbar(title = "Cases per 1000 People")
 fig <- fig %>% layout(
   title = 'Choropleth Map',
   geo = g
 )
 fig
+
 
 
 # Sources
