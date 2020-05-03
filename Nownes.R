@@ -1,6 +1,7 @@
 library(lubridate)
 library(dplyr)
 library(ggplot2)
+library(plotly)
 
 dat = read.csv("us_states_covid19_daily.csv", stringsAsFactors = FALSE)
 dat$date = ymd(dat$date)
@@ -66,3 +67,30 @@ dat = dat %>%
 
 dat %>%
   ggplot(aes(x=date,y= positive/population)) + geom_point() + facet_wrap(~state)
+
+g <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa'),
+  showlakes = TRUE,
+  lakecolor = toRGB('white')
+)
+fig = dat %>%
+  plot_geo(locationmode = 'USA-states')
+fig <- fig %>% add_trace(
+  z = ~(positive/population)*1000, text = ~state_abbrev,
+  locations = ~state_abbrev,
+  color = ~(positive/population)*1000, colors = 'Purples'
+)
+fig <- fig %>% colorbar(title = "Cases per 1000")
+fig <- fig %>% layout(
+  title = 'Choropleth Map',
+  geo = g
+)
+fig
+
+
+# Sources
+# See proposal for raw data source (Kaggle)
+# https://www.kff.org/health-costs/issue-brief/state-data-and-policy-actions-to-address-coronavirus/ (social distancing by state)
+# US Census (population by state)
+# https://www.littler.com/publication-press/publication/stay-top-stay-home-list-statewide (stay at home order enactment dates)
