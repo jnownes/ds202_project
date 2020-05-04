@@ -87,11 +87,10 @@ plot_dat$positive_test_percent_last_3_days = (plot_dat$increase_cases_last_3_day
 plot_dat$`Stay at Home Order` = as.character(plot_dat$`Stay at Home Order`)
 plot_dat$`Stay at Home Order`[plot_dat$`Stay at Home Order` == '-'] = "Never Enacted"
 plot_dat$`Stay at Home Order` = factor(plot_dat$`Stay at Home Order`,levels = c("Never Enacted","Lifted","Rolled Back to High Risk Groups","High-Risk Groups","Statewide"))
-levels(plot_dat$`Stay at Home Order`)
 
 plot_dat$`State Is Easing Social Distancing Measures` = as.character(plot_dat$`State Is Easing Social Distancing Measures`)
 plot_dat$`State Is Easing Social Distancing Measures`[plot_dat$`State Is Easing Social Distancing Measures` == "-"] = "No"
-
+plot_dat$`State Is Easing Social Distancing Measures` = factor(plot_dat$`State Is Easing Social Distancing Measures`, levels = c("No", "Yes"))
 
 
 
@@ -121,7 +120,31 @@ plot_dat$hover = plot_dat %>%
              "\nEasing Social Restrictions:", `State Is Easing Social Distancing Measures`
   ))
 
-            
+library(RColorBrewer)
+nfactor_orders = 5
+orders <- brewer.pal(n = nfactor_orders,name = "Greys")
+names(orders) = levels(plot_dat$`Stay at Home Order`)
+plot_dat$test_color_orders = as.numeric(plot_dat$`Stay at Home Order`)
+Z_Breaks = function(n){
+  CUTS = seq(0,1,length.out=n+1)
+  rep(CUTS,ifelse(CUTS %in% 0:1,1,2))
+}
+
+colorScale_orders = data.frame(z=Z_Breaks(nfactor_orders),
+                         col=rep(orders,each=2),stringsAsFactors=FALSE)
+
+nfactor_easing = 2
+easing <- gray.colors(nfactor_easing, start = 0, end = 1)
+names(easing) = levels(plot_dat$`State Is Easing Social Distancing Measures`)
+plot_dat$test_color_easing = as.numeric(plot_dat$`State Is Easing Social Distancing Measures`)
+Z_Breaks = function(n){
+  CUTS = seq(0,1,length.out=n+1)
+  rep(CUTS,ifelse(CUTS %in% 0:1,1,2))
+}
+
+colorScale_easing = data.frame(z=Z_Breaks(nfactor_easing),
+                               col=rep(easing,each=2),stringsAsFactors=FALSE)
+
 fig = plot_dat %>%
   plot_geo(locationmode = 'USA-states') %>%
   
@@ -146,7 +169,7 @@ fig = plot_dat %>%
   color = ~cases_percent_increase,
   colorscale = 'Reds',
   hoverinfo = "text",
-  colorbar = list(title = "Percentage Increase\nin Cases Since 4/28", y = 0.8, len = .6)
+  colorbar = list(title = "Percentage Increase\nin Cases From 4/28-5/1", y = 0.8, len = .6)
 ) %>%
   
   add_trace(
@@ -172,7 +195,7 @@ fig = plot_dat %>%
     colorscale = 'Greens',
     reversescale = TRUE,
     hoverinfo = "text",
-    colorbar = list(title = "Percentage Increase in Tests", y = .8, len = .6)
+    colorbar = list(title = "Percentage Increase\nin Tests From 4/28-5/1", y = .8, len = .6)
   ) %>%
   
   add_trace(
@@ -184,20 +207,31 @@ fig = plot_dat %>%
     color = ~positive_test_percent_last_3_days,
     colorscale = 'Reds',
     hoverinfo = "text",
-    colorbar = list(title = "Percentage of Tests\nReturning Positive", y = .8, len = .6)
+    colorbar = list(title = "Percentage of Tests\nReturning Positive\nFrom 4/28-5/1", y = .8, len = .6)
   ) %>%
   
   add_trace(
     type = "choropleth",
-    name = "Stay At Home Order",
-    z = ~`Stay at Home Order`,
-    text = ~hover,
+    name = "Stay at Home Orders",
     locations = ~state_abbrev,
-    color = ~`Stay at Home Order`,
-    colorscale = 'Greys',
+    text = ~hover,
     hoverinfo = "text",
-    colorbar = list(title = "Stay at Home", y = .8, len = .6)
+    z = plot_dat$test_color_orders,
+    colorscale=colorScale_orders,
+    colorbar=list(title = "Stay at Home Order Status", tickvals=c(1.4,2.2,3,3.8,4.6), ticktext=names(orders), y = .8, len = .6)
   ) %>%
+  
+  add_trace(
+    type = "choropleth",
+    name = "Easing Social Restrictions",
+    locations = ~state_abbrev,
+    text = ~hover,
+    hoverinfo = "text",
+    z = plot_dat$test_color_easing,
+    colorscale=colorScale_easing,
+    colorbar=list(title = "Is the State Easing\nSocial Restrictions?", tickvals=c(1.25,1.75), ticktext=names(easing), y = .8, len = .6)
+  ) %>%
+  
   
   layout(
   geo = g,
@@ -207,40 +241,46 @@ fig = plot_dat %>%
       buttons = list(
         list(
           method = "update",
-          args = list(list(visible = c(TRUE,FALSE,FALSE,FALSE,FALSE,FALSE)),
+          args = list(list(visible = c(TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE)),
                       list(title = "Total Cases/1000 People by May 1")),
-          label = "Cases/1000"
+          label = "Total Cases/1000"
         ),
         
         list(
           method = "update",
-          args = list(list(visible = c(FALSE,TRUE,FALSE,FALSE,FALSE,FALSE)),
+          args = list(list(visible = c(FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE)),
                       list(title = "Percentage Increase in Cases From April 28-May 1")),
-          label = "Percentage Increase"),
+          label = "Percentage Increase in Cases"),
         
         list(
           method = "update",
-          args = list(list(visible = c(FALSE,FALSE,TRUE,FALSE,FALSE,FALSE)),
+          args = list(list(visible = c(FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE)),
                       list(title = "Total Tests/1000 People by May 1")),
-          label = "Tests/1000"),  
+          label = "Total Tests/1000"),  
         
         list(
             method = "update",
-            args = list(list(visible = c(FALSE,FALSE,FALSE,TRUE,FALSE,FALSE)),
+            args = list(list(visible = c(FALSE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE)),
                         list(title = "Percentage Increase in Tests")),
             label = "Percentage Increase in Tests"),
         
         list(
           method = "update",
-          args = list(list(visible = c(FALSE,FALSE,FALSE,FALSE,TRUE,FALSE)),
+          args = list(list(visible = c(FALSE,FALSE,FALSE,FALSE,TRUE,FALSE,FALSE)),
                       list(title = "Percentage of Testing Returning Positive From April 28-May 1")),
           label = "Positive Testing Percentage"),
         
         list(
           method = "update",
-          args = list(list(visible = c(FALSE,FALSE,FALSE,FALSE,FALSE,TRUE)),
-                      list(title = "Stay at Home")),
-          label = "Stay at Home")
+          args = list(list(visible = c(FALSE,FALSE,FALSE,FALSE,FALSE,TRUE,FALSE)),
+                      list(title = "Stay at Home Order Status")),
+          label = "Stay at Home Order Status"),
+        
+        list(
+          method = "update",
+          args = list(list(visible = c(FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE)),
+                      list(title = "States that are Easing\nSocial Restrictions")),
+          label = "Easing Social Restrictions?")
       )
     )
   )
