@@ -106,73 +106,55 @@ plot_dat$hover = plot_dat %>%
 
             
 fig = plot_dat %>%
-  plot_geo(locationmode = 'USA-states')
-fig <- fig %>% add_trace(
-  name = "Rate",
+  plot_geo(locationmode = 'USA-states') %>%
+  
+  add_trace(
+  type = "choropleth",
+  name = "Cases/1000",
   z = ~(positive/population)*1000,
   text = ~hover,
   locations = ~state_abbrev,
   color = ~(positive/population)*1000,
   colors = 'Reds',
-  hoverinfo = "text"
-)
-
-fig = fig %>% add_trace(
-  name = "Percent",
+  hoverinfo = "text",
+  colorbar = list(title = "Cases Per 1000 People", y = 0.7)
+) %>%
+  
+  add_trace(
+  type = "choropleth",
+  name = "Percentage Increase",
   z = ~percent_increase,
   text = ~hover,
   locations = ~state_abbrev,
   color = ~percent_increase,
   colors = 'Reds',
-  hoverinfo = "text"
-)
-
-
-fig <- fig %>% layout(
-  title = "Drop down menus - Plot type",
+  hoverinfo = "text",
+  colorbar = list(title = "Percentage Increase\nin Cases Since 4/28", y = 0.7)
+) %>%
+  
+  layout(
+  geo = g,
   updatemenus = list(
     list(
       y = 0.8,
       buttons = list(
-        list(method = "restyle",
-             args = list("visible", c(TRUE, FALSE)),
-             label = "Rate"),
+        list(
+          method = "update",
+          args = list(list(visible = c(TRUE,FALSE)),
+                      list(title = "Cases/1000 People on May 1")),
+          label = "Cases/1000"
+        ),
         
-        list(method = "restyle",
-             args = list("visible", c(FALSE, TRUE)),
-             label = "Percent")))
-  ))
-
-
-fig <- fig %>% layout(
-  title = 'Choropleth Map',
-  geo = g
+        list(
+          method = "update",
+          args = list(list(visible = c(FALSE, TRUE)),
+                      list(title = "Percentage Increase in Cases From April 28-May 1")),
+          label = "Percentage Increase")
+      )
+    )
+  )
 )
 fig
-
-fig <- fig %>% colorbar(title = "5/1 Cases per 1000 People")
-
-
-
-
-
-
-fig2 = plot_dat %>%
-  plot_geo(locationmode = 'USA-states')
-fig2 = fig2 %>% add_trace(
-  z = ~percent_increase,
-  text = ~hover,
-  locations = ~state_abbrev,
-  color = ~percent_increase,
-  colors = 'Reds',
-  hoverinfo = "text"
-)
-fig2 = fig2 %>% colorbar(title = "Percentage Increase in\nCases per 1000 People\nSince 4/28")
-fig2 = fig2 %>% layout(
-  title = 'Choropleth Map 2',
-  geo = g
-)
-fig2
 
 
 # Sources
