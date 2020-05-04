@@ -74,9 +74,9 @@ plot_dat = dat %>%
   mutate(increase_cases_last_3_days = diff(-positive)) %>%
   filter(date == '2020-05-01')
 
-plot_dat$`3_days_ago` = plot_dat$positive - plot_dat$increase_cases_last_3_days
+plot_dat$`cases_3_days_ago` = plot_dat$positive - plot_dat$increase_cases_last_3_days
 
-plot_dat$percent_increase = ((plot_dat$positive - plot_dat$`3_days_ago`)/(plot_dat$`3_days_ago`))*100
+plot_dat$cases_percent_increase = ((plot_dat$positive - plot_dat$`cases_3_days_ago`)/(plot_dat$`cases_3_days_ago`))*100
 
 
 plot_dat$`Stay at Home Order` = as.character(plot_dat$`Stay at Home Order`)
@@ -96,9 +96,10 @@ g <- list(
 
 plot_dat$hover = plot_dat %>%
   with(paste(state,
-             "\nMay 1:", round((positive/population)*1000,digits = 2), "cases per 1000 people",
-             "\nApril 28:", round((`3_days_ago`/population)*1000,digits = 2), "cases per 1000 people",
-             "\nPercentage Increase:", sprintf("%.2f%%", percent_increase),
+             "\nTotal cases by May 1:", round((positive/population)*1000,digits = 2), "cases per 1000 people",
+             "\nTotal cases by April 28:", round((`cases_3_days_ago`/population)*1000,digits = 2), "cases per 1000 people",
+             "\nPercentage increase in cases from 4/28-5/1:", sprintf("%.2f%%", cases_percent_increase),
+             "\nTotal tests by May 1:", round((totalTestResults/population)*1000,digits = 2), "tests per 1000 people",
              "\nStay at Home Order Status:", `Stay at Home Order`,
              "\nDate order enacted:", format(stay_at_home_date, format = "%B %d"),
              "\nEasing Social Restrictions:", `State Is Easing Social Distancing Measures`
@@ -123,14 +124,27 @@ fig = plot_dat %>%
   add_trace(
   type = "choropleth",
   name = "Percentage Increase",
-  z = ~percent_increase,
+  z = ~cases_percent_increase,
   text = ~hover,
   locations = ~state_abbrev,
-  color = ~percent_increase,
+  color = ~cases_percent_increase,
   colors = 'Reds',
   hoverinfo = "text",
   colorbar = list(title = "Percentage Increase\nin Cases Since 4/28", y = 0.7)
 ) %>%
+  
+  add_trace(
+    type = "choropleth",
+    name = "Tests/1000",
+    z = ~(totalTestResults/population)*1000,
+    text = ~hover,
+    locations = ~state_abbrev,
+    color = ~(totalTestResults/population)*1000,
+    colorscale = 'Greens',
+    reversescale = TRUE,
+    hoverinfo = "text",
+    colorbar = list(title = "Tests Per 1000 People", y = 0.7)
+  ) %>%
   
   layout(
   geo = g,
@@ -140,16 +154,23 @@ fig = plot_dat %>%
       buttons = list(
         list(
           method = "update",
-          args = list(list(visible = c(TRUE,FALSE)),
-                      list(title = "Cases/1000 People on May 1")),
+          args = list(list(visible = c(TRUE,FALSE,FALSE)),
+                      list(title = "Total Cases/1000 People by May 1")),
           label = "Cases/1000"
         ),
         
         list(
           method = "update",
-          args = list(list(visible = c(FALSE, TRUE)),
+          args = list(list(visible = c(FALSE, TRUE,FALSE)),
                       list(title = "Percentage Increase in Cases From April 28-May 1")),
-          label = "Percentage Increase")
+          label = "Percentage Increase"),
+        
+        list(
+          method = "update",
+          args = list(list(visible = c(FALSE,FALSE,TRUE)),
+                      list(title = "Total Tests/1000 People by May 1")),
+          label = "Tests/1000"
+        )
       )
     )
   )
