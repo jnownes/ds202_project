@@ -103,10 +103,12 @@ plot_dat$hover = plot_dat %>%
              "\nDate order enacted:", format(stay_at_home_date, format = "%B %d"),
              "\nEasing Social Restrictions:", `State Is Easing Social Distancing Measures`
   ))
-             
+
+            
 fig = plot_dat %>%
   plot_geo(locationmode = 'USA-states')
 fig <- fig %>% add_trace(
+  name = "Rate",
   z = ~(positive/population)*1000,
   text = ~hover,
   locations = ~state_abbrev,
@@ -114,12 +116,45 @@ fig <- fig %>% add_trace(
   colors = 'Reds',
   hoverinfo = "text"
 )
-fig <- fig %>% colorbar(title = "5/1 Cases per 1000 People")
+
+fig = fig %>% add_trace(
+  name = "Percent",
+  z = ~percent_increase,
+  text = ~hover,
+  locations = ~state_abbrev,
+  color = ~percent_increase,
+  colors = 'Reds',
+  hoverinfo = "text"
+)
+
+
+fig <- fig %>% layout(
+  title = "Drop down menus - Plot type",
+  updatemenus = list(
+    list(
+      y = 0.8,
+      buttons = list(
+        list(method = "restyle",
+             args = list("visible", c(TRUE, FALSE)),
+             label = "Rate"),
+        
+        list(method = "restyle",
+             args = list("visible", c(FALSE, TRUE)),
+             label = "Percent")))
+  ))
+
+
 fig <- fig %>% layout(
   title = 'Choropleth Map',
   geo = g
 )
 fig
+
+fig <- fig %>% colorbar(title = "5/1 Cases per 1000 People")
+
+
+
+
 
 
 fig2 = plot_dat %>%
