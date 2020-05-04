@@ -1,7 +1,6 @@
 library(lubridate)
 library(dplyr)
 library(ggplot2)
-library(plotly)
 
 dat = read.csv("us_states_covid19_daily.csv", stringsAsFactors = FALSE)
 dat$date = ymd(dat$date)
@@ -68,26 +67,77 @@ dat = dat %>%
 dat %>%
   ggplot(aes(x=date,y= positive/population)) + geom_point() + facet_wrap(~state)
 
+
+plot_dat = dat %>%
+  filter(date == '2020-04-28' | date == '2020-05-01') %>%
+  group_by(state_abbrev) %>%
+  mutate(increase_cases_last_3_days = diff(-positive)) %>%
+  filter(date == '2020-05-01')
+
+plot_dat$`3_days_ago` = plot_dat$positive - plot_dat$increase_cases_last_3_days
+
+plot_dat$percent_increase = ((plot_dat$positive - plot_dat$`3_days_ago`)/(plot_dat$`3_days_ago`))*100
+
+
+plot_dat$`Stay at Home Order` = as.character(plot_dat$`Stay at Home Order`)
+plot_dat$`Stay at Home Order`[plot_dat$`Stay at Home Order` == '-'] = "Never Enacted"
+
+plot_dat$`State Is Easing Social Distancing Measures` = as.character(plot_dat$`State Is Easing Social Distancing Measures`)
+plot_dat$`State Is Easing Social Distancing Measures`[plot_dat$`State Is Easing Social Distancing Measures` == "-"] = "No"
+
+
+library(plotly)
 g <- list(
   scope = 'usa',
   projection = list(type = 'albers usa'),
   showlakes = TRUE,
   lakecolor = toRGB('white')
 )
-fig = dat[1:51,] %>%
+
+plot_dat$hover = plot_dat %>%
+  with(paste(state,
+             "\nMay 1:", round((positive/population)*1000,digits = 2), "cases per 1000 people",
+             "\nApril 28:", round((`3_days_ago`/population)*1000,digits = 2), "cases per 1000 people",
+             "\nPercentage Increase:", sprintf("%.2f%%", percent_increase),
+             "\nStay at Home Order Status:", `Stay at Home Order`,
+             "\nDate order enacted:", format(stay_at_home_date, format = "%B %d"),
+             "\nEasing Social Restrictions:", `State Is Easing Social Distancing Measures`
+  ))
+             
+fig = plot_dat %>%
   plot_geo(locationmode = 'USA-states')
 fig <- fig %>% add_trace(
-  z = ~(positive/population)*1000, text = ~positive,
+  z = ~(positive/population)*1000,
+  text = ~hover,
   locations = ~state_abbrev,
-  color = ~(positive/population)*1000, colors = 'Reds'
+  color = ~(positive/population)*1000,
+  colors = 'Reds',
+  hoverinfo = "text"
 )
-fig <- fig %>% colorbar(title = "Cases per 1000 People")
+fig <- fig %>% colorbar(title = "5/1 Cases per 1000 People")
 fig <- fig %>% layout(
   title = 'Choropleth Map',
   geo = g
 )
 fig
 
+
+fig2 = plot_dat %>%
+  plot_geo(locationmode = 'USA-states')
+fig2 = fig2 %>% add_trace(
+  z = ~percent_increase,
+  text = ~hover,
+  locations = ~state_abbrev,
+  color = ~percent_increase,
+  colors = 'Reds',
+  hoverinfo = "text"
+)
+fig2 = fig2 %>% colorbar(title = "Percentage Increase in\nCases per 1000 People\nSince 4/28")
+fig2 = fig2 %>% layout(
+  title = 'Choropleth Map 2',
+  geo = g
+)
+fig2
 
 
 # Sources
