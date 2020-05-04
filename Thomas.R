@@ -28,26 +28,21 @@ iowaLine <- iowaLine %>%
 iowaLine
 
 
-USA <- dat %>%
-  group_by(state) %>%
-  summarise(Total_positive = sum(positive)) 
+counties = read.csv("covid-19_iowacounties.csv", stringsAsFactors = FALSE)
+str(counties)
 
-USA
-
-
-#filtering out midwest states
-midwest <- dat %>%
-  select(date, state, positive, death) %>%
-  filter(state == 'IA' | state == 'SD' | state == 'ND'| state == 'MN' | state == 'NE'| state == 'KS'| state == 'MI'| state == 'IL'| state == 'WI'| state == 'MI'| state == 'IN'| state == 'OH')
-
-#replacing NAs in death column with 0 in death column for better visualization in plotly 
-midwest[is.na(midwest)] = 0
+counties$Population <- as.numeric(gsub(",","",counties$Population))
 
 
-midwestLine <- midwest %>%
-  group_by(state) %>%
-  plot_ly(x=~date, y=~positive, group=~state, type = 'scatter', color = ~state, mode='lines+markers') 
-  
+
+
+IA_county<- counties %>%
+  filter(Population >= 13500) %>%
+  ggplot(counties, mapping= aes(x=County, y=Confirmed, fill=Population)) + 
+  geom_bar(stat="identity", position = "dodge") + coord_flip() + ylab("Number of Confirmed Cases") + ggtitle("Confirmed cases in Iowa by County")
+
+IA_county
+
 
 
 #Looking at Covid Testing
@@ -65,4 +60,4 @@ dat %>%
 
 
 
- 
+
