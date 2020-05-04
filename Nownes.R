@@ -71,12 +71,15 @@ dat %>%
 plot_dat = dat %>%
   filter(date == '2020-04-28' | date == '2020-05-01') %>%
   group_by(state_abbrev) %>%
-  mutate(increase_cases_last_3_days = diff(-positive)) %>%
+  mutate(increase_cases_last_3_days = diff(-positive),
+         increase_tests_last_3_days = diff(-totalTestResults)) %>%
   filter(date == '2020-05-01')
 
 plot_dat$`cases_3_days_ago` = plot_dat$positive - plot_dat$increase_cases_last_3_days
+plot_dat$`tests_3_days_ago` = plot_dat$totalTestResults - plot_dat$increase_tests_last_3_days
 
 plot_dat$cases_percent_increase = ((plot_dat$positive - plot_dat$`cases_3_days_ago`)/(plot_dat$`cases_3_days_ago`))*100
+plot_dat$tests_percent_increase = ((plot_dat$totalTestResults - plot_dat$`tests_3_days_ago`)/(plot_dat$`tests_3_days_ago`))*100
 
 
 plot_dat$`Stay at Home Order` = as.character(plot_dat$`Stay at Home Order`)
@@ -84,6 +87,8 @@ plot_dat$`Stay at Home Order`[plot_dat$`Stay at Home Order` == '-'] = "Never Ena
 
 plot_dat$`State Is Easing Social Distancing Measures` = as.character(plot_dat$`State Is Easing Social Distancing Measures`)
 plot_dat$`State Is Easing Social Distancing Measures`[plot_dat$`State Is Easing Social Distancing Measures` == "-"] = "No"
+
+
 
 
 library(plotly)
@@ -118,7 +123,7 @@ fig = plot_dat %>%
   color = ~(positive/population)*1000,
   colors = 'Reds',
   hoverinfo = "text",
-  colorbar = list(title = "Cases Per 1000 People", y = 0.7)
+  colorbar = list(title = "Cases Per 1000 People", y = 0.7, len = 2)
 ) %>%
   
   add_trace(
@@ -130,7 +135,7 @@ fig = plot_dat %>%
   color = ~cases_percent_increase,
   colors = 'Reds',
   hoverinfo = "text",
-  colorbar = list(title = "Percentage Increase\nin Cases Since 4/28", y = 0.7)
+  colorbar = list(title = "Percentage Increase\nin Cases Since 4/28", y = 0.7, len = 2)
 ) %>%
   
   add_trace(
@@ -143,7 +148,7 @@ fig = plot_dat %>%
     colorscale = 'Greens',
     reversescale = TRUE,
     hoverinfo = "text",
-    colorbar = list(title = "Tests Per 1000 People", y = 0.7)
+    colorbar = list(title = "Tests Per 1000 People", y = 0.7, len = 2)
   ) %>%
   
   layout(
