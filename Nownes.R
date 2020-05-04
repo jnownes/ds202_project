@@ -81,9 +81,13 @@ plot_dat$`tests_3_days_ago` = plot_dat$totalTestResults - plot_dat$increase_test
 plot_dat$cases_percent_increase = ((plot_dat$positive - plot_dat$`cases_3_days_ago`)/(plot_dat$`cases_3_days_ago`))*100
 plot_dat$tests_percent_increase = ((plot_dat$totalTestResults - plot_dat$`tests_3_days_ago`)/(plot_dat$`tests_3_days_ago`))*100
 
+plot_dat$positive_test_percent_last_3_days = (plot_dat$increase_cases_last_3_days)/(plot_dat$increase_tests_last_3_days)*100
+
 
 plot_dat$`Stay at Home Order` = as.character(plot_dat$`Stay at Home Order`)
 plot_dat$`Stay at Home Order`[plot_dat$`Stay at Home Order` == '-'] = "Never Enacted"
+plot_dat$`Stay at Home Order` = factor(plot_dat$`Stay at Home Order`,levels = c("Never Enacted","Lifted","Rolled Back to High Risk Groups","High-Risk Groups","Statewide"))
+levels(plot_dat$`Stay at Home Order`)
 
 plot_dat$`State Is Easing Social Distancing Measures` = as.character(plot_dat$`State Is Easing Social Distancing Measures`)
 plot_dat$`State Is Easing Social Distancing Measures`[plot_dat$`State Is Easing Social Distancing Measures` == "-"] = "No"
@@ -101,11 +105,18 @@ g <- list(
 
 plot_dat$hover = plot_dat %>%
   with(paste(state,
-             "\nTotal cases by May 1:", round((positive/population)*1000,digits = 2), "cases per 1000 people",
+             
+             "\n\nTotal cases by May 1:", round((positive/population)*1000,digits = 2), "cases per 1000 people",
              "\nTotal cases by April 28:", round((`cases_3_days_ago`/population)*1000,digits = 2), "cases per 1000 people",
              "\nPercentage increase in cases from 4/28-5/1:", sprintf("%.2f%%", cases_percent_increase),
-             "\nTotal tests by May 1:", round((totalTestResults/population)*1000,digits = 2), "tests per 1000 people",
-             "\nStay at Home Order Status:", `Stay at Home Order`,
+             
+             "\n\nTotal tests by May 1:", round((totalTestResults/population)*1000,digits = 2), "tests per 1000 people",
+             "\nTotal tests by April 28:", round((`tests_3_days_ago`/population)*1000,digits = 2), "tests per 1000 people",
+             "\nPercentage increase in tests from 4/28-5/1:",sprintf("%.2f%%",tests_percent_increase),
+             
+             "\n\nPercentage of positive tests from 4/28-5/1:", sprintf("%.2f%%",positive_test_percent_last_3_days),
+             
+             "\n\nStay at Home Order Status:", `Stay at Home Order`,
              "\nDate order enacted:", format(stay_at_home_date, format = "%B %d"),
              "\nEasing Social Restrictions:", `State Is Easing Social Distancing Measures`
   ))
@@ -121,21 +132,21 @@ fig = plot_dat %>%
   text = ~hover,
   locations = ~state_abbrev,
   color = ~(positive/population)*1000,
-  colors = 'Reds',
+  colorscale = 'Reds',
   hoverinfo = "text",
-  colorbar = list(title = "Cases Per 1000 People", y = 0.7, len = 2)
+  colorbar = list(title = "Cases Per 1000 People", y = 0.8, len = .6)
 ) %>%
   
   add_trace(
   type = "choropleth",
-  name = "Percentage Increase",
+  name = "Percentage Increase in Cases",
   z = ~cases_percent_increase,
   text = ~hover,
   locations = ~state_abbrev,
   color = ~cases_percent_increase,
-  colors = 'Reds',
+  colorscale = 'Reds',
   hoverinfo = "text",
-  colorbar = list(title = "Percentage Increase\nin Cases Since 4/28", y = 0.7, len = 2)
+  colorbar = list(title = "Percentage Increase\nin Cases Since 4/28", y = 0.8, len = .6)
 ) %>%
   
   add_trace(
@@ -148,7 +159,44 @@ fig = plot_dat %>%
     colorscale = 'Greens',
     reversescale = TRUE,
     hoverinfo = "text",
-    colorbar = list(title = "Tests Per 1000 People", y = 0.7, len = 2)
+    colorbar = list(title = "Tests Per 1000 People", y = .8, len = .6)
+  ) %>%  
+  
+  add_trace(
+    type = "choropleth",
+    name = "Tests/1000 Percentage Increase",
+    z = ~tests_percent_increase,
+    text = ~hover,
+    locations = ~state_abbrev,
+    color = ~tests_percent_increase,
+    colorscale = 'Greens',
+    reversescale = TRUE,
+    hoverinfo = "text",
+    colorbar = list(title = "Percentage Increase in Tests", y = .8, len = .6)
+  ) %>%
+  
+  add_trace(
+    type = "choropleth",
+    name = "Positive Test Percentage",
+    z = ~positive_test_percent_last_3_days,
+    text = ~hover,
+    locations = ~state_abbrev,
+    color = ~positive_test_percent_last_3_days,
+    colorscale = 'Reds',
+    hoverinfo = "text",
+    colorbar = list(title = "Percentage of Tests\nReturning Positive", y = .8, len = .6)
+  ) %>%
+  
+  add_trace(
+    type = "choropleth",
+    name = "Stay At Home Order",
+    z = ~`Stay at Home Order`,
+    text = ~hover,
+    locations = ~state_abbrev,
+    color = ~`Stay at Home Order`,
+    colorscale = 'Greys',
+    hoverinfo = "text",
+    colorbar = list(title = "Stay at Home", y = .8, len = .6)
   ) %>%
   
   layout(
@@ -159,23 +207,40 @@ fig = plot_dat %>%
       buttons = list(
         list(
           method = "update",
-          args = list(list(visible = c(TRUE,FALSE,FALSE)),
+          args = list(list(visible = c(TRUE,FALSE,FALSE,FALSE,FALSE,FALSE)),
                       list(title = "Total Cases/1000 People by May 1")),
           label = "Cases/1000"
         ),
         
         list(
           method = "update",
-          args = list(list(visible = c(FALSE, TRUE,FALSE)),
+          args = list(list(visible = c(FALSE,TRUE,FALSE,FALSE,FALSE,FALSE)),
                       list(title = "Percentage Increase in Cases From April 28-May 1")),
           label = "Percentage Increase"),
         
         list(
           method = "update",
-          args = list(list(visible = c(FALSE,FALSE,TRUE)),
+          args = list(list(visible = c(FALSE,FALSE,TRUE,FALSE,FALSE,FALSE)),
                       list(title = "Total Tests/1000 People by May 1")),
-          label = "Tests/1000"
-        )
+          label = "Tests/1000"),  
+        
+        list(
+            method = "update",
+            args = list(list(visible = c(FALSE,FALSE,FALSE,TRUE,FALSE,FALSE)),
+                        list(title = "Percentage Increase in Tests")),
+            label = "Percentage Increase in Tests"),
+        
+        list(
+          method = "update",
+          args = list(list(visible = c(FALSE,FALSE,FALSE,FALSE,TRUE,FALSE)),
+                      list(title = "Percentage of Testing Returning Positive From April 28-May 1")),
+          label = "Positive Testing Percentage"),
+        
+        list(
+          method = "update",
+          args = list(list(visible = c(FALSE,FALSE,FALSE,FALSE,FALSE,TRUE)),
+                      list(title = "Stay at Home")),
+          label = "Stay at Home")
       )
     )
   )
