@@ -142,8 +142,8 @@ dat2$fips = as.factor(dat2$fips)
 
 View(dat2)
 
-plot<- ggplot(dat2, aes(x=date)) + geom_line(aes(y=positive/population *1000, color='Positive Tests')) + geom_line(aes(y=totalTestResults/population * 1000, color='Tests')) + facet_wrap(~state) +   ggtitle("State Testing Overtime") + ylab('Number of Cases per 1000') + xlab('Date') 
-
+plot<- ggplot(dat2, aes(x=date)) + geom_line(aes(y=positive/population *1000, color='Positive Tests')) + geom_line(aes(y=totalTestResults/population * 1000, color='Tests')) + facet_wrap(~state) +   ggtitle("State Testing Over Time") + ylab('Number of Cases per 1000') + xlab('Date') 
+plot
 
 
 
