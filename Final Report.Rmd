@@ -517,24 +517,53 @@ Next, we wanted to look at the increase in the amount of people tested in each s
 
 <center>
 
-![Figure 9: Deaths Per Day](Iowa_counties.JPG)
+![Figure 9: Iowa Counties](Iowa_counties.JPG)
 
 </center>
-
+Next, we thought it would be interesting to look specifically into the state of Iowa and how it has been affected by the virus. It is important to point out that unlike many states the  governor of Iowa never issued a stay at home order. So we then created a similar graph to the one above using plotly that shows the number of positive tests and deaths in Iowa over the course of time. We were able to see that there is a gradual increase in the number of cases that tested positive in Iowa. We concluded that this possibly was an effect due to not issuing a stay at home order. Continuing our analysis in Iowa we wanted to take it one step further and specifically look into the counties of Iowa and see how the population of each county had an effect on the amount of cases there were. By using ggplot we were able to create a bar graph that displayed the most number of cases in each county and was colored by the population of each county. We didn’t end up using all counties in Iowa just because some of them did not have any data reported. Just as we expected, more highly populated counties such as Polk County and BlackHawk county have a lot more cases which you are able to see in the graph. It isn’t surprising that Polk County has the most cases since this is where Des Moines is located. Another example you can see is Lynn county as they have reported a large number of cases which again is not surprising since Cedar Rapids is located here which is another highly populated city in Iowa. 
 
 <center>
 
-![Figure 10: Deaths Per Day](State_tests_over_time.JPG)
+![Figure 10: Testing over time](State_tests_over_time.JPG)
 
 </center>
 
+Next, we thought it would be interesting to look at  COVID-19 testing overall in the U.S. We wanted to see what we could find from comparing the number of tests given to the number of tests that resulted in positive to see if states were doing a good job of increasing their testing or not. Specifically we were curious to see how the testing in each state has increased over time and how it correlated with the amount of cases that resulted in positive cases. We used ggplot to create a line graph of each state that displayed two lines. One line shows the number of tests conducted and the other line shows the number of tests being positive. Ideally we would like to see testing increase and the amount of tests that are positive decrease so that essentially there is a gap that forms between the two lines in each of the graphs. For example, you can see the gap that I am referring to if you compare New Jersey and West Virginia. New Jersey shows that as more people are getting tested the more positive test results are reported. This means that New Jersey needs to keep increasing their testing until the gap in their specific graph begins to widen. On the other hand West Virginia seems to be monitoring their testing well and as they increase their testing, their positive results remain constant and a gap starts to display. Eventually we’d like all states to look like West Virginia as far as testing goes.
 
 ## Answers to Questions Raised
+* What is the trend of the overall dataset? Is it increasing or decreasing? Speeding up or slowing down?
+    * According to the graph, there is no sign of long term decrease of the new reported cases as the number of new cases has increased and decreased periodically.
+
+* Where are the most reported cases? Least reported cases? (Specifically within each U.S state)
+    * New York State has the most reported cases while Alaska State has the least reported cases until now.
+
+* How has Iowa been affected by the virus over time? Has there been a gradual increase, what does it look like?
+    * Iowa is having a gradual increase in the number of cases that stated positive since March 9th.
+
+* What is the change in the amount of people tested in each state over time?
+    * The amount of people tested has increased in each state over time.
+
+* What can the percentage of positive testing results tell us about the current testing capacity of each state?
+    * The percentage of positive testing results of some severe states like Connecticut, New Jersey and Maryland are higher than the average, which ranged from a 24% to 31% positive rate. If a high percentage of tests come back positive, it's clear there's inadequate testing capacity to capture all of the infected people in the community.
+
+* Which state is likely to have the most/least percentage increase in confirmed cases in 2 weeks time depending on the current growth rate?
+    * Wyoming is likely to have the most percentage increase in confirmed cases while Montana is likely to have the least percentage increase in confirmed cases in 2 weeks time depending on the current growth rate.
+
+* Which state has done the greatest/worst job in preventing the spreading of coronavirus?
+    * Vermont has done the greatest job in preventing the spreading of coronavirus as it has enacted a stay-at-home order as early as March 25 which resulted in the lowest percentage increase in cases now.  Furthermore, Wyoming has done the worst job as it has never enacted a stay-at-home order which resulted in the highest percentage increase in cases now. 
 
 ## Conclusion
+In the big picture, there is no indication of long term decline of new reported cases by day in the United States as the number has been fluctuating. However, based on the graph, we can see that the number of new reported cases per day has maintained at a stable state due to the implementation of social restrictions from the government. In addition, due to limited testing capacity, the percentage of positive testing in some severe states like Connecticut, New Jersey and Maryland is higher than average. As a result, the government has to increase the testing capacity in order to bring down the percentage of positive testing to a safer benchmark.
 
 ## Personal Contributions
 #### John Nownes
+My main contribution to this project was in cleaning and joining all pieces of data together, and creating the featured infographic (Figure 1). I also set up the video recordings, and helped translate this Final Report document from a Google Drive file into this Rmd file, with a special focus on formatting this report. A full summary of the work I did can be seen in the Nownes.R file.
+
 #### Sonia Thomas
+For this project I found the raw dataset from Kaggle and we were all in agreement to do our research on COVID-19. I then wanted to focus on the virus specifically in Iowa and in the counties of Iowa. John suggested that it would be interesting to focus on the testing in the U.S and how that has increased over time and what impact it had on the amount of cases that were positive so I also focused on that as well. To tackle my first task I had to obtain data from the sources listed on Population data and COVID-19 in Iowa data above. I then created my own csv file and merged the two together. For creating my graphs I used ggplot and plotly to display my findings. We all contributed to the report  and presentation but specifically I presented 4 slides and wrote exploratory analysis about the overall trend in the data, virus specifically in Iowa, and COVID-19 testing in the U.S.
+
 #### Yi Hang Khor
+I have brought out most of the possible questions that can be answered from the dataset to provide better understanding for the audience on our project. In addition, I have used the ggplot function to visualize the trend of the overall dataset to and presented the related portion of the presentation. Lastly, I wrote the part of the question answering and conclusion in the report.
+
 #### Kobe Pranivong
+Although I was not the one who found this dataset, I was the one who suggested using Kaggle to find one due to it being resourceful for the final project of DS201. For this project, I decided to explore the two questions “What is the increase in the amount of people tested in each state over time?” and “Where are the most reported cases? Least reported cases?”. I used the ggplot and plot_ly library functions to visualize the data for my questions. Then, I presented my portion of the presentation, which ended up being 3 slides. Lastly, I wrote the part of the exploratory analysis that included my data.
