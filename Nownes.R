@@ -65,7 +65,7 @@ dat = dat %>%
 
 
 dat %>%
-  ggplot(aes(x=date,y= positive/population)) + geom_point() + facet_wrap(~state)
+  ggplot(aes(x=date,y=(positive/population)*1000)) + geom_point() + facet_wrap(~state) + labs(x= "Date", y= "Cases/1000 People", title = "State-Wide Coronavirus Cases Per 1000 People (Up to May 1)")
 
 
 plot_dat = dat %>%
