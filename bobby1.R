@@ -7,7 +7,6 @@ dat = read.csv("us_states_covid19_daily.csv", stringsAsFactors = FALSE)
 #View(dat)
 str(dat)
 dat$date = ymd(dat$date)
-dat$date <- rev(dat$date)
 
 
 
