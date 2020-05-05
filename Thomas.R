@@ -45,7 +45,7 @@ IA_county
 
 IA_county2<- counties %>%
   filter(Population >= 13500) %>%
-  ggplot(counties, mapping= aes(x=County, y=Confirmed, fill=Populatio)) + 
+  ggplot(counties, mapping= aes(x=County, y=Confirmed, fill=Population)) + 
   geom_bar(stat="identity", position = "dodge") + coord_flip() + ylab("Number of Confirmed Cases") + ggtitle("Confirmed cases in Iowa by County")
 
 IA_county2
